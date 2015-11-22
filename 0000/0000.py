@@ -14,7 +14,6 @@ def make_font(fontFile, size):
     font = ImageFont.truetype(fontFile, size)
     return font
 
-# xy, per
 def draw_text(input, output, text, pers, font, color):
     try:
         im = Image.open(input)
