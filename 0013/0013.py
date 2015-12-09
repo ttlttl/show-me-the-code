@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+第 0013 题： 用 Python 写一个爬图片的程序，爬 这个链接里的日本妹子图片 :-)
+当用户输入敏感词语，则用 星号 * 替换，例如当用户输入「北京是个好城市」，则变成「**是个好城市」。
+"""
 import requests
 import os
 from bs4 import BeautifulSoup
