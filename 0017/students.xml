@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+<!--学生信息表
+"id" : [名字，数学，语文，英文]
+-->
+<students>
+<student id="1">
+<name>张三</name>
+<scores>
+<chinese>150.0</chinese>
+<math>120.0</math>
+<english>100.0</english>
+</scores>
+</student>
+<student id="2">
+<name>李四</name>
+<scores>
+<chinese>90.0</chinese>
+<math>99.0</math>
+<english>95.0</english>
+</scores>
+</student>
+<student id="3">
+<name>王五</name>
+<scores>
+<chinese>60.0</chinese>
+<math>66.0</math>
+<english>68.0</english>
+</scores>
+</student>
+</students>
+</root>
