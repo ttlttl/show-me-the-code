@@ -9,12 +9,13 @@
 }
 """
 import xlwt
+from collections import OrderedDict
 
-students_info = {
-    "1":["张三",150,120,100],
-    "2":["李四",90,99,95],
-    "3":["王五",60,66,68]
-}
+students_info = OrderedDict([
+    ("1",["张三",150,120,100]),
+    ("2",["李四",90,99,95]),
+    ("3",["王五",60,66,68])
+])
 
 def save_students_info(filename, info):
     file = xlwt.Workbook()
