@@ -1,16 +1,15 @@
 from app import app, db
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify,current_app, redirect, url_for
 from .models import Message
 
 @app.route('/')
 def index():
-    return render_template('index.html')
-
-@app.route('/_add_numbers')
-def add_numbers():
-    a = request.args.get('a', 0, type=int)
-    b = request.args.get('b', 0, type=int)
-    return jsonify(result=a+b)
+    page = request.args.get('page', 1, type=int)
+    pagination = Message.query.order_by(Message.timestamp.desc()).paginate(
+        page, per_page=current_app.config['MESSAGES_PER_PAGE'], error_out=False
+    )
+    messages = pagination.items
+    return render_template('index.html', messages=messages, pagination=pagination)
 
 @app.route('/submit')
 def post():
@@ -20,10 +19,14 @@ def post():
         msg = Message(author=author, message=message)
         db.session.add(msg)
         db.session.commit()
-    result = Message.query.filter_by(author=author).first()
+        return jsonify(result='Success')
+    return jsonify(result='False')
 
-    return jsonify(result=str(result.author) + str(result.message) + str(result.timestamp))
 
-@app.route('/test')
-def test():
-    return render_template('test.html')
+@app.route('/deleteall')
+def destroydatabase():
+    messages = Message.query.order_by(Message.timestamp)
+    for message in messages:
+        db.session.delete(message)
+    db.session.commit()
+    return redirect(url_for('.index'))
