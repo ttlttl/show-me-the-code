@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}我的任务{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h2>我的任务</h2>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <a class="btn btn-success" type="button" href="{{ url_for('task.new_task') }}">创建任务</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <table class="table table-hover">
+            <thread>
+                <tr>
+                    <th>任务</th>
+                    <th>时间</th>
+                    <th>管理</th>
+                </tr>
+            </thread>
+            <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{task.title}}</td>
+                    <td>{{ moment(task.timestamp).format('YYYY年M月D日, h:mm:ss a') }}</td>
+                    <td><a href="#">删除</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, 'task.my_tasks') }}
+        </div>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

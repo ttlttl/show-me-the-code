@@ -38,5 +38,6 @@ class Task(db.Model):
     __tablename__ = 'tasks'
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    timestamp = db.Column(db.DateTime(), index=True, default=datetime.utcnow)
     title = db.Column(db.String(64), index=True)
     body = db.Column(db.Text)
