@@ -27,3 +27,17 @@ def my_tasks():
     )
     tasks = pagination.items
     return render_template('task/my-tasks.html', tasks=tasks, pagination=pagination)
+
+@task.route('/task/<int:id>')
+@login_required
+def detail_task(id):
+    task = Task.query.get_or_404(id)
+    return render_template('task/detail-task.html', task=task)
+
+@task.route('/task/delete/<int:id>')
+@login_required
+def delete_task(id):
+    task = Task.query.get_or_404(id)
+    db.session.delete(task)
+    db.session.commit()
+    return redirect(url_for('task.my_tasks'))

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}任务详情{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ task.title }}</h1>
+</div>
+<div class="col-md-4">
+    {{ task.body }}
+</div>
+{% endblock %}

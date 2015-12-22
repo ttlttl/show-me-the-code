@@ -26,9 +26,9 @@
             <tbody>
             {% for task in tasks %}
                 <tr>
-                    <td>{{task.title}}</td>
+                    <td><a href="{{ url_for('task.detail_task', id=task.id) }}">{{task.title}}</a></td>
                     <td>{{ moment(task.timestamp).format('YYYY年M月D日, h:mm:ss a') }}</td>
-                    <td><a href="#">删除</a></td>
+                    <td><a href="{{ url_for('task.delete_task', id=task.id) }}">删除</a></td>
                 </tr>
             {% endfor %}
             </tbody>
