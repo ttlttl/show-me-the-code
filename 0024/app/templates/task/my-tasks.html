@@ -3,7 +3,6 @@
 {% import "_macros.html" as macros %}
 
 {% block title %}我的任务{% endblock %}
-
 {% block page_content %}
 <div class="page-header">
     <h2>我的任务</h2>
@@ -11,6 +10,9 @@
 <div class="row">
     <div class="col-md-2">
         <a class="btn btn-success" type="button" href="{{ url_for('task.new_task') }}">创建任务</a>
+    </div>
+    <div class="col-md-2 col-md-offset-4">
+        {{wtf.quick_form(form)}}
     </div>
 </div>
 <div class="row">

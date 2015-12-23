@@ -1,9 +1,10 @@
 from . import task
-from flask import render_template, redirect, request, url_for, flash
-from flask_login import login_user, login_required, logout_user, current_user
-from .forms import TaskForm
+from flask import render_template, redirect, request, url_for
+from flask_login import login_required, current_user
+from .forms import TaskForm, OrderByForm
 from ..models import Task
 from .. import db
+import json
 
 @task.route('/task/new-task', methods=['GET', 'POST'])
 @login_required
@@ -18,15 +19,24 @@ def new_task():
         return redirect(url_for('task.my_tasks'))
     return render_template('task/new-task.html', form=form)
 
-@task.route('/task/my-tasks', methods=['GET', 'POST'])
+@task.route('/task/my-tasks', methods=['POST', 'GET'])
 @login_required
 def my_tasks():
-    page = request.args.get('page', 1, type=int)
-    pagination = Task.query.filter_by(author_id=current_user.id).order_by(Task.timestamp.desc()).paginate(
-        page, per_page=5, error_out=False
-    )
+    order = 0
+    form = OrderByForm()
+    if form.validate_on_submit():
+        order = int(form.select.data)
+    page = int(request.args.get('page', 1, type=int))
+    if order == 0:
+        pagination = Task.query.filter_by(author_id=current_user.id).order_by(Task.timestamp.desc()).paginate(
+            page, per_page=5, error_out=False
+        )
+    else:
+        pagination = Task.query.filter_by(author_id=current_user.id).order_by(Task.timestamp).paginate(
+            page, per_page=5, error_out=False
+        )
     tasks = pagination.items
-    return render_template('task/my-tasks.html', tasks=tasks, pagination=pagination)
+    return render_template('task/my-tasks.html', tasks=tasks, pagination=pagination, form=form)
 
 @task.route('/task/<int:id>')
 @login_required
