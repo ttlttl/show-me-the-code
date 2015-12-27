@@ -2,7 +2,7 @@ from . import task
 from flask import render_template, redirect, request, url_for
 from flask_login import login_required, current_user
 from .forms import TaskForm, OrderByForm
-from ..models import Task
+from ..models import Task, User
 from .. import db
 import json
 
@@ -51,3 +51,12 @@ def delete_task(id):
     db.session.delete(task)
     db.session.commit()
     return redirect(url_for('task.my_tasks'))
+
+@task.route('/task/tasks', methods=['POST', 'GET'])
+def tasks():
+    tasks = Task.query.all()
+    return json.dumps([{"id": task.id,
+             "author": User.query.filter_by(id = task.author_id).first().username,
+             "title": task.title,
+             "body": task.body}
+            for task in tasks])
