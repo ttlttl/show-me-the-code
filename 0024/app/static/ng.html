@@ -3,36 +3,72 @@
     <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 	<script src="http://apps.bdimg.com/libs/angular.js/1.0.4/angular.js"></script>
 </head>
+
 <body ng-controller="TaskController">
+
 <div class="container">
+    <div class="page-header">
+        <h2>我的任务</h2>
+    </div>
+    <div class="row">
+        <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                排序
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+                <li role="presentation"><a role="menuitem" tabindex="-1" ng-click="set_order_0()">最新</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" ng-click="set_order_1()">最早</a></li>
+            </ul>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-8">
             <table class="table table-hover">
                 <thread>
                     <tr>
-                        <th>标题</th>
-                        <th>作者</th>
+                        <th>任务</th>
+                        <th>时间</th>
+                        <th>管理</th>
                     </tr>
                 </thread>
                 <tbody>
                     <tr ng-repeat="task in tasks">
-                        <td>{{task.title}}</td>
-                        <td>{{task.author}}</td>
+                        <td><a href="#">{{task.title}}</a></td>
+                        <td>{{task.timestamp}}</td>
+                        <td><a href="/task/delete/{{task.id}}">删除</a></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-</div>
     <script>
         function TaskController($scope, $http) {
-            $http.get('/task/tasks').success(function(data, status, headers, config) {
+            $scope.order = '0';
+            $scope.set_order_0 = function() {
+                $scope.order = '0';
+                $http.get('/task/tasks', {params:{order: '0'}}).success(function(data, status, headers, config) {
+                    $scope.tasks = data;
+                })
+            }
+            $scope.set_order_1 = function() {
+                $http.get('/task/tasks', {params:{order: '1'}}).success(function(data, status, headers, config) {
+                    $scope.tasks = data;
+                })
+            }
+            $scope.delete = function(index) {
+                var postData = {id: $scope.tasks[$index].id}
+                $http.post('/task/delete', postData).success(function(data, status, headers, config) {
+                    var x = 0;
+                })
+            }
+            $http.get('/task/tasks', {params:{order: '1'}}).success(function(data, status, headers, config) {
                 $scope.tasks = data;
             })
         }
     </script>
-
-    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.jsjquery.min.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    </div>
 </body>
 </html>

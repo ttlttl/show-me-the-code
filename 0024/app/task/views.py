@@ -54,9 +54,12 @@ def delete_task(id):
 
 @task.route('/task/tasks', methods=['POST', 'GET'])
 def tasks():
-    tasks = Task.query.all()
+    if request.args.get('order') == '1':
+        tasks = Task.query.filter_by(author_id=current_user.id).order_by(Task.timestamp.desc())
+    else:
+        tasks = Task.query.filter_by(author_id=current_user.id).order_by(Task.timestamp)
     return json.dumps([{"id": task.id,
              "author": User.query.filter_by(id = task.author_id).first().username,
              "title": task.title,
-             "body": task.body}
+             "timestamp": str(task.timestamp)}
             for task in tasks])
