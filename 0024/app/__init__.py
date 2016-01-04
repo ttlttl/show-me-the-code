@@ -36,5 +36,7 @@ def create_app():
     app.register_blueprint(auth_blueprint)
     from .task import task as task_blueprint
     app.register_blueprint(task_blueprint)
+    from .api import api as api_blueprint
+    app.register_blueprint(api_blueprint)
 
     return app

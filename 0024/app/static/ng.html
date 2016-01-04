@@ -47,13 +47,13 @@
             $scope.order = '0';
             $scope.set_order_0 = function() {
                 $scope.order = '0';
-                $http.get('/task/tasks', {params:{order: '0'}}).success(function(data, status, headers, config) {
-                    $scope.tasks = data;
+                $http.get('/tasks', {params:{order: '0'}}).success(function(data, status, headers, config) {
+                    $scope.tasks = data.tasks;
                 })
             }
             $scope.set_order_1 = function() {
-                $http.get('/task/tasks', {params:{order: '1'}}).success(function(data, status, headers, config) {
-                    $scope.tasks = data;
+                $http.get('/tasks', {params:{order: '1'}}).success(function(data, status, headers, config) {
+                    $scope.tasks = data.tasks;
                 })
             }
             $scope.delete = function(index) {
@@ -62,8 +62,8 @@
                     var x = 0;
                 })
             }
-            $http.get('/task/tasks', {params:{order: '1'}}).success(function(data, status, headers, config) {
-                $scope.tasks = data;
+            $http.get('/tasks/').success(function(data, status, headers, config) {
+                $scope.tasks = data.tasks;
             })
         }
     </script>

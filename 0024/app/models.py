@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import db
 from . import login_manager
+from flask import url_for
 from flask_moment import datetime
 from flask_login import  UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -25,6 +26,12 @@ class User(UserMixin,db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def to_json(self):
+        json_user = {
+            'username': self.username,
+        }
+        return json_user
+
 """
 Flask-Login要求程序实现一个回调函数，使用指定的标识符加载用户，
 加载用户的回调函数接收以Unicode字符串形式表示的用户标识符，
@@ -41,3 +48,14 @@ class Task(db.Model):
     timestamp = db.Column(db.DateTime(), index=True, default=datetime.utcnow)
     title = db.Column(db.String(64), index=True)
     body = db.Column(db.Text)
+
+    def to_json(self):
+        json_task = {
+            'id': self.id,
+            'title': self.title,
+            'timestamp': self.timestamp,
+            'url': url_for('api.get_task', id=self.id, _external=True),
+            'author': url_for('api.get_user', id=self.author_id),
+            'body': self.body
+        }
+        return json_task
