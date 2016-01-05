@@ -19,6 +19,7 @@
                 <li><a href="{{ url_for('main.index') }}">主页</a></li>
                 <li><a href="{{ url_for('task.new_task') }}">创建任务</a></li>
                 <li><a href="{{ url_for('task.my_tasks') }}">我的任务</a></li>
+                <li><a href="{{ url_for('main.ng')}}">angular版</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
