@@ -8,11 +8,26 @@ from .. import db
 @login_required
 def get_tasks():
     order = request.args.get('order')
+    page = request.args.get('page', 1, type=int)
     if order == '0':
-        tasks = Task.query.filter_by(author_id=current_user.id).order_by(Task.timestamp.desc())
+        ordered = Task.timestamp.desc()
     else:
-        tasks = Task.query.filter_by(author_id=current_user.id).order_by(Task.timestamp)
-    return jsonify({'tasks': [task.to_json() for task in tasks]})
+        ordered = Task.timestamp
+    pagination = Task.query.filter_by(author_id=current_user.id).order_by(ordered).\
+        paginate(page, per_page=8, error_out=False)
+    tasks = pagination.items
+    prev = None
+    if pagination.has_prev:
+        prev = url_for('api.get_tasks', page=page-1, _external=True)
+    next = None
+    if pagination.has_next:
+        next = url_for('api.get_tasks', page=page+1, _external=True)
+    return jsonify({
+        'tasks': [task.to_json() for task in tasks],
+        'prev': prev,
+        'next': next,
+        'count': pagination.total
+    })
 
 @api.route('/tasks/<int:id>', methods=['GET'])
 @login_required
@@ -40,7 +55,7 @@ def create_task():
     if not request.json or not 'title' in request.json:
         return jsonify({'result': 'Error'})
     task = Task(title=request.json['title'],
-                body=request.json['body'],
+                body=request.json['body'] if 'body' in request.json.keys() else None,
                 author=current_user._get_current_object())
     db.session.add(task)
     db.session.commit()

@@ -17,64 +17,118 @@ ng-app ng-controller="TaskController"
     <h2>我的任务</h2>
 </div>
 <div class="row">
-    <div class="col-md-2">
-        <a class="btn btn-success" type="button" href="#" ng-click="addtask()">创建任务</a>
+    <div class="col-md-4">
+            <span>{{result | angular}}</span>
     </div>
-    <div class="col-md-2 col-md-offset-4">
+    <div class="col-md-2 col-md-offset-5">
         <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
                 排序
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-                <li role="presentation"><a role="menuitem" tabindex="-1" ng-click="loadtasks(0)">最新</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" ng-click="loadtasks(1)">最早</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" ng-click="changeorder(0)">最新</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" ng-click="changeorder(1)">最早</a></li>
             </ul>
         </div>
     </div>
 </div>
-    <span>{{result | angular}}</span>
-    <div class="row">
-        <div class="col-md-8">
-            <table class="table table-hover">
-                <thread>
-                    <tr>
-                        <th>任务</th>
-                        <th>时间</th>
-                        <th>管理</th>
-                    </tr>
-                </thread>
-                <tbody>
-                    <tr ng-repeat="task in tasks">
-                        <td><a href="#">{{task.title | angular}}</a></td>
-                        <td>{{task.timestamp | angular}}</td>
-                        <td><a href="#" ng-click="deletetask($index)">删除</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div class="row">
+    <div class="col-md-4">
+        <form role="form">
+            <div class="form-group">
+                <label for="title">标题</label>
+                <input type="text" class="form-control" id="title" placeholder="标题" ng-model="newtask.title">
+            </div>
+            <div class="form-group">
+                <label>详情</label>
+                <textarea class="form-control" row="5" placeholder="详情" ng-model="newtask.body"></textarea>
+            </div>
+            <button type="submit" class="btn btn-default" ng-click="addtask()">创建</button>
+        </form>
     </div>
-    <script>
-        function TaskController($scope, $http) {
-            $scope.loadtasks = function(v) {
-                    $http.get('/tasks/', {params: {order: v}}).success(function(data, status, headers, config) {
-                    $scope.tasks = data.tasks;
-                })
-            }
-            $scope.addtask = function() {
-                var postData = {
-                    title: 'hello, angular',
-                    body: 'None'}
-                $http.post('/tasks/', postData).success(function(data, status, headers, config) {
-                    $scope.loadtasks(0);
-                })
-            }
-            $scope.deletetask = function(index) {
-                $http.delete('/tasks/' + $scope.tasks[index].id).success(function(data, status, headers, config) {
-                    $scope.loadtasks(0);
-                })
-            }
-            $scope.tasks = $scope.loadtasks(0)
+    <div class="col-md-5 col-md-offset-1">
+        <table class="table table-hover">
+            <thread>
+                <tr>
+                    <th>任务</th>
+                    <th>时间</th>
+                    <th>管理</th>
+                </tr>
+            </thread>
+            <tbody>
+                <tr ng-repeat="task in tasks">
+                    <td><a href="#" ng-click="modifytask($index)">{{task.title | angular}}</a></td>
+                    <td>{{task.timestamp | angular}}</td>
+                    <td><a href="#" ng-click="deletetask($index)">删除</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="col-md-5 col-md-offset-5">
+    <ul class="pagination">
+        <li><a href="#" ng-click="loadtasks(ordered, currentpage-1)">&laquo;</a></li>
+        <li><a href="#" ng-repeat="page in pages" ng-click="loadtasks(ordered, page)">{{page | angular}}</a></li>
+        <li><a href="#" ng-click="loadtasks(ordered, currentpage+1)">&raquo;</a></li>
+    </ul>
+</div>
+<script>
+    function TaskController($scope, $http) {
+        $scope.newtask = {};
+        $scope.ordered = 0;
+        $scope.pages = [];
+        $scope.currentpage = 1;
+        $scope.changeorder = function(order) {
+            $scope.ordered = order;
+            $scope.loadtasks($scope.ordered)
         }
-    </script>
+        $scope.loadtasks = function(ordered, pagenum) {
+                if (pagenum != null) {
+                    $scope.currentpage = pagenum;
+                }
+                $http.get('/tasks/', {params: {order: ordered, page: pagenum}}).success(function(data, status, headers, config) {
+                $scope.tasks = data.tasks;
+                $scope.pages = []
+                for (var i=1; i<=data.count/8+1; i++) {
+                    $scope.pages.push(i);
+                }
+            })
+        }
+        $scope.addtask = function() {
+            if ($scope.newtask.title == null) {
+                $scope.result = "标题不能为空!";
+                return
+            }
+            var postData = {
+                title: $scope.newtask.title,
+                body: $scope.newtask.body
+            }
+            $scope.result = null;
+            $http.post('/tasks/', postData).success(function(data, status, headers, config) {
+                if (data.result == 'Done') {
+                    $scope.loadtasks($scope.ordered);
+                    $scope.result = '创建成功!'
+                }
+            })
+            $scope.newtask = {};
+        }
+        $scope.deletetask = function(index) {
+            $scope.result = null;
+            $http.delete('/tasks/' + $scope.tasks[index].id).success(function(data, status, headers, config) {
+                if (data.result == 'Done') {
+                    $scope.loadtasks($scope.ordered);
+                    $scope.result = '删除成功!';
+                } else {
+                    $scope.result = '删除失败!';
+                }
+            })
+        }
+        $scope.modifytask = function(index) {
+            $scope.newtask.title = $scope.tasks[index].title;
+            $scope.newtask.body = $scope.tasks[index].body;
+        }
+        $scope.tasks = $scope.loadtasks($scope.ordered)
+    }
+</script>
 {% endblock %}
