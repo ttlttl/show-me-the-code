@@ -13,8 +13,13 @@ def get_tasks():
         ordered = Task.timestamp.desc()
     else:
         ordered = Task.timestamp
-    pagination = Task.query.filter_by(author_id=current_user.id).order_by(ordered).\
-        paginate(page, per_page=8, error_out=False)
+    keywords = request.args.get('keywords')
+    if keywords:
+        pagination = Task.query.filter_by(author_id=current_user.id).filter(Task.title.contains(keywords)).order_by(ordered).\
+            paginate(page, per_page=8, error_out=False)
+    else:
+        pagination = Task.query.filter_by(author_id=current_user.id).order_by(ordered).\
+            paginate(page, per_page=8, error_out=False)
     tasks = pagination.items
     prev = None
     if pagination.has_prev:

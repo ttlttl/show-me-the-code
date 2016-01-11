@@ -20,7 +20,15 @@ ng-app ng-controller="TaskController"
     <div class="col-md-4">
             <span>{{result | angular}}</span>
     </div>
-    <div class="col-md-2 col-md-offset-5">
+    <div class="col-md-2 col-md-offset-1">
+        <form>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="关键字" ng-model="searchkey">
+                <button type="submit" class="btn btn-sm btn-success" ng-click="loadtasks(ordered)">搜索</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-2 col-md-offset-2">
         <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
                 排序
@@ -75,6 +83,7 @@ ng-app ng-controller="TaskController"
 </div>
 <script>
     function TaskController($scope, $http) {
+        $scope.searchkey = null;
         $scope.newtask = {};
         $scope.ordered = 0;
         $scope.pages = [];
@@ -87,9 +96,9 @@ ng-app ng-controller="TaskController"
                 if (pagenum != null) {
                     $scope.currentpage = pagenum;
                 }
-                $http.get('/tasks/', {params: {order: ordered, page: pagenum}}).success(function(data, status, headers, config) {
+                $http.get('/tasks/', {params: {order: ordered, page: pagenum, keywords: $scope.searchkey}}).success(function(data, status, headers, config) {
                 $scope.tasks = data.tasks;
-                $scope.pages = []
+                $scope.pages = [];
                 for (var i=1; i<=data.count/8+1; i++) {
                     $scope.pages.push(i);
                 }
